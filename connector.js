@@ -17,7 +17,6 @@ const tokenList = {
     },
 }
 
-
 let userWallet = '';
 // check withUserDetails input;
 const userName = document.querySelector('#defiplugs-name');
@@ -27,8 +26,6 @@ const defiPlugsBtn = document.querySelector('#defiplugs-btn');
 const defiPlugsConnect = document.querySelector('#defiplugs-connect');
 const isDonation = defiPlugsBtn.dataset.dplgsdonation == 1 ? true: false;
 const withUserInput = defiPlugsBtn.dataset.dplgsinput ==1 ? true: false;
-
-
 
 window.ethereum.request({ method: 'eth_accounts' }).then((addr) => {
   if (addr.length > 0) {
@@ -43,9 +40,6 @@ defiPlugsConnect.addEventListener('click', () => {
     defiPlugsConnect.style.display = 'none';
   });
 });
-
-
-
 
 defiPlugsBtn.addEventListener('click', () => {
   const dataToken = defiPlugsBtn.dataset.dplgstoken;
@@ -85,19 +79,31 @@ defiPlugsBtn.addEventListener('click', () => {
   let contract = new web3.eth.Contract(minABI, tokenAddress);
   // calculate ERC20 token amount
   let value = amount.mul(web3.utils.toBN(10).pow(decimals));
-  // call transfer function
+ 
   if(withUserInput){
     defiplugsUserDetails.name = userName.value;
     defiplugsUserDetails.email = userEmail.value;
   }
-  console.log(defiplugsUserDetails)
-  
-
+ // call transfer function
   contract.methods
     .transfer(toAddress, value)
     .send({ from: fromAddress })
     .on('receipt', function (hash) {
-      console.log(hash);
       //send info to BE, record userDetail and hash
+      fetch('http://localhost:5000/', {
+          method: 'POST',
+          cache: 'no-cache',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: 'name',
+            email: 'email',
+            tx: hash.transactionHash,
+            from: fromAddress,
+          }),
+        }).then(() => {
+          defiPlugsTrxDone()
+        });
     });
 });
