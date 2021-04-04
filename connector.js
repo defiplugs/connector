@@ -80,28 +80,28 @@ defiPlugsBtn.addEventListener('click', () => {
   // calculate ERC20 token amount
   let value = amount.mul(web3.utils.toBN(10).pow(decimals));
  
-  if(withUserInput){
-    defiplugsUserDetails.name = userName.value;
-    defiplugsUserDetails.email = userEmail.value;
-  }
  // call transfer function
   contract.methods
     .transfer(toAddress, value)
     .send({ from: fromAddress })
     .on('receipt', function (hash) {
       //send info to BE, record userDetail and hash
-      fetch('http://localhost:5000/', {
+      defiplugsUserDetails.name = withUserInput ? userName.value : '';
+      defiplugsUserDetails.email =  withUserInput ? userEmail.value : '';
+      defiplugsUserDetails.tx = hash.transactionHash;
+      defiplugsUserDetails.from = fromAddress;
+      defiplugsUserDetails.account = userWallet;
+      defiplugsUserDetails.isDonation = isDonation ? true: false;
+      defiplugsUserDetails.donationAmount = isDonation ? Number(donationAmount.value): 'N/A'
+      const reqBody = JSON.stringify(defiplugsUserDetails);
+     
+      fetch('http://defiplugs.herokuapp.com', {
           method: 'POST',
           cache: 'no-cache',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            name: 'name',
-            email: 'email',
-            tx: hash.transactionHash,
-            from: fromAddress,
-          }),
+          body: reqBody,
         }).then(() => {
           defiPlugsTrxDone()
         });
