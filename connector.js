@@ -93,8 +93,8 @@ defiPlugsBtn.addEventListener('click', () => {
       defiplugsUserDetails.tx = hash.transactionHash;
       defiplugsUserDetails.from = fromAddress;
       defiplugsUserDetails.account = userWallet.toUpperCase();
-      defiplugsUserDetails.isDonation = isDonation ? true: false;
-      defiplugsUserDetails.donationAmount = isDonation ? Number(donationAmount.value): 'N/A'
+      defiplugsUserDetails.isDonation = isDonation ? true: false;;
+      defiplugsUserDetails.date = new Date()
       const reqBody = JSON.stringify(defiplugsUserDetails);
      
       fetch('http://defiplugs.herokuapp.com', {
