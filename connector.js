@@ -26,6 +26,7 @@ const defiPlugsBtn = document.querySelector('#defiplugs-btn');
 const defiPlugsConnect = document.querySelector('#defiplugs-connect');
 const isDonation = defiPlugsBtn.dataset.dplgsdonation == 1 ? true: false;
 const withUserInput = defiPlugsBtn.dataset.dplgsinput ==1 ? true: false;
+const account = defiPlugsConnect.dataset.dplgsaccount
 
 window.ethereum.request({ method: 'eth_accounts' }).then((addr) => {
   if (addr.length > 0) {
@@ -46,8 +47,9 @@ defiPlugsBtn.addEventListener('click', () => {
   const dataAmount = isDonation ?  donationAmount.value : defiPlugsBtn.dataset.dplgsprice;
   let web3 = new Web3(window.ethereum);
   let tokenAddress = tokenList[dataToken].address;
-  let toAddress = userWallet;
   let fromAddress = userWallet;
+  let toAddress = account;
+ 
   // Use BigNumber
   let decimals = web3.utils.toBN(Number(tokenList[dataToken].decimal));
   let amount = web3.utils.toBN(Number(dataAmount));
